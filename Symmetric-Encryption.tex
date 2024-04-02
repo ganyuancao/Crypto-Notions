@@ -1,0 +1,468 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Symmetric Encryption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pseudorandom Permutation/Function}
+\subsubsection{PRP Security}
+Let games be defined as in Figure \ref{fig:prp-game-def1} (or Figure \ref{fig:prp-game-def2}), a block cipher $E$ is defined to be $(q,t,\varepsilon)$-secure as a \textit{pseudorandom permutation} ($\prp$), if for any adversary $\adv$ running in time at most $t$ and making at most $q$ queries to the oracle $\enc$, the advantage $\advantage{PRP}{E}[(\adv)] \leq \varepsilon$ where  
+
+$$
+\begin{aligned}
+\advantage{\prp}{E}[(\adv)] &= 2 \cdot \abs{\Pr[\mathrm{G}^\prp(\adv) \Rightarrow \true ] - \frac{1}{2}} \\
+&= \abs{\Pr[\mathrm{G}^{\prp\textrm-0}(\adv)] - \Pr[\mathrm{G}^{\prp\textrm-1}(\adv)]}
+\end{aligned}
+$$ 
+
+
+\begin{figure}[h]
+\centering
+\begin{codeframe}[colback = white, width=8.75cm, boxsep=5pt]{Game $\mathrm{G}_\prp$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+K \sample \bin^k \\
+\pi \sample \mathcal{P}_n 
+ }
+
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Finalize}$}{ 
+b' \sample \adv^{\enc }(\cdot) \\
+\pcreturn b'=b
+}
+\end{pcvstack}
+
+\procedure[linenumbering]{$\textbf{Oracle } \enc(M)$}{ 
+\pcif b = 0 \pcthen \\
+\pcind y \leftarrow E_K(M) \\
+\pcelse \\
+\pcind y \leftarrow \pi(M) \\
+\pcreturn y
+}
+\end{pchstack}
+\end{codeframe}
+\caption{$\prp$ game for a block cipher $E$ in the first style. Here $\mathcal{P}_n$ represents the set of permutations on length $n$. }
+\label{fig:prp-game-def1}
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \begin{codeframe}[colback = white, width=4.5cm, height=4.5cm]{$\mathrm{G}^{\prp\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+               K \sample \bin^\kappa
+            }
+    
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                C \gets E_K(M) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=4.5cm, height=4.5cm]{$\mathrm{G}^{\prp\textrm-1}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+               \pi \sample \mathcal{P}_n 
+            }
+
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                 C \gets \pi(M) \\
+                 \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\prp$ game for a block cipher $E$ in the second style.}
+\label{fig:prp-game-def2}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{PRF Security}
+Let games be defined as in Figure \ref{fig:prf-game-def1} (or Figure \ref{fig:prf-game-def2}), a block cipher $E$ is defined to be $(q,t,\varepsilon)$-secure as a \textit{pseudorandom function} ($\prf$), if for any adversary $\adv$ running in time at most $t$ and making at most $q$ queries to $\enc$, the advantage $\advantage{PRF}{E}[(\adv)] \leq \varepsilon$ where
+
+$$
+\begin{aligned}
+\advantage{\prf}{E}[(\adv)] &= 2 \cdot \abs{\Pr[\mathrm{G}^\prf (\adv) \Rightarrow \true ] - \frac{1}{2}} \\
+&= \abs{\Pr[\mathrm{G}^{\prf\textrm-0}(\adv)] - \Pr[\mathrm{G}^{\prf\textrm-1}(\adv)]}
+\end{aligned}
+$$ 
+
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=8.75cm, boxsep=5pt]{Game $\mathrm{G}^\prf$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+K \sample \bin^k \\
+\rho \sample \mathcal{F}_n 
+ }
+
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Finalize}$}{ 
+b' \sample \adv^{\enc}(\cdot) \\
+\pcreturn b'=b
+}
+\end{pcvstack}
+
+\procedure[linenumbering]{$\textbf{Oracle } \enc(M)$}{ 
+\pcif b = 0 \pcthen \\
+\pcind y \leftarrow E_K(M) \\
+\pcelse \\
+\pcind y \leftarrow \rho(M) \\
+\pcreturn y
+}
+\end{pchstack}
+\end{codeframe}
+\caption{$\prf$ game for a block cipher $E$ in the first style. }
+\label{fig:prf-game-def1}
+\end{figure}
+
+
+
+\begin{figure}[!h]
+    \centering
+    \begin{codeframe}[colback = white, width=4.5cm, height=4.5cm]{$\mathrm{G}^{\prf\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+               K \sample \bin^\kappa
+            }
+    
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                C \gets E_K(M) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=4.5cm, height=4.5cm]{$\mathrm{G}^{\prf\textrm-1}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+               \rho \sample \mathcal{F}_n 
+            }
+
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                 C \gets \rho(M) \\
+                 \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\prf$ games for a block cipher $E$ in the second style.}
+\label{fig:prf-game-def2}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Ciphertext Indistinguishability}
+\subsubsection{LoR-CPA Security}
+A symmetric encryption scheme  $\textsf{SE}$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with left-or-right oracle} ($\lorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\lorcpa}{\textsf{SE}}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\lorcpa}{\textsf{SE}}[(\adv)] = 2 \cdot | \Pr[\mathrm{G}^{\lorcpa}(\adv) \Rightarrow \true ] - \frac{1}{2} | 
+$$ 
+
+
+\begin{figure}[h]
+\centering
+\begin{codeframe}[colback = white, width=9.5cm, height=4.75cm]{$\mathrm{G}^{\lorcpa}$}
+
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+K \sample \mathcal{K} 
+}
+
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Finalize}$}{
+ b' \sample \adv^{\enc}(\cdot) \\
+\pcreturn b'= b
+}
+\end{pcvstack}
+\procedure[linenumbering]{$\textbf{Oracle }\enc(N,M_0, M_1)$}{ 
+\pcif |M_0| \neq |M_1| \pcthen \\ 
+	\t \pcreturn \bot \\
+C \sample \mathcal{E}^N_K(M_b) \\
+ \pcreturn C
+}
+\end{pchstack}
+\end{codeframe}
+\caption{LoR-CPA Game for a \textsf{SE} scheme $\Pi$. }
+\label{fig:lorcpa-game}
+\end{figure}
+
+
+
+\subsubsection{RoR-CPA Security}
+A symmetric encryption scheme  $\textsf{SE}$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with real-or-random oracle} ($\rorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\rorcpa}{\textsf{SE}}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\rorcpa}{\textsf{SE}}[(\adv)] = \abs{\Pr[\mathrm{G}^{\rorcpa\textrm-0}(\adv)]  - \Pr[\mathrm{G}^{\rorcpa\textrm-1}(\adv)]
+} 
+$$
+
+\begin{figure}[!h]
+    \centering
+    \begin{codeframe}[colback = white, width=5.25cm, height=6cm]{$\mathrm{G}^{\rorcpa\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Init} $}{
+                K \sample \mathcal{K} \\ 
+                \mathcal{Q} \gets \emptyset  
+            }
+    
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Enc}(N,M)$}{
+                \pcif (N,M) \in \mathcal{Q} \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \gets \mathcal{E}^N_K(M) \\ 
+                \mathcal{Q} \gets \mathcal{Q} \cup \{(N,M)\} \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=5.25cm, height=5.75cm]{$\mathrm{G}^{\rorcpa\textrm-1}$}
+        \begin{pcvstack}[space=0.5cm]
+             \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Init} $}{
+                \mathcal{Q} \gets \emptyset  
+            }
+            
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Enc}(N,M)$}{
+                 \pcif (N,M) \in \mathcal{Q} \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \sample \bin^{|M|} \\
+                \mathcal{Q} \gets \mathcal{Q} \cup \{(N,M)\} \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\rorcpa$ game for a SE scheme $\Pi$}
+\label{fig:rorcpa-game}
+\end{figure}
+
+
+\bigskip 
+\textit{Remarks:}
+\begin{enumerate}
+	\item $\indcpa$ security imples decryption security.
+	\item $\indcpa$ security implies key recovery ($\textsc{TKR}$) security.
+	\item $\indcpa$ security ensures that every bit of the plaintext is hidden. 
+	\item One-time Pad is $\indcpa$ is 1-query $\indcpa$ secure. 
+	\item Here oracle $\oracle[LoR]$ refers to "left or right". 
+	\item A special form of $\indcpa$ security, which formalize the indistinguishability of a symmetric encryption scheme from random bits, named IND\$-CPA, is defined as in Figure~\ref{fig:lorcpa-game}. 
+\end{enumerate}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{LoR-CCA Security}
+A symmetric encryption scheme  $\textsf{SE}$ is defined to be $(q_e, q_d, t,\varepsilon)$-\textit{indistinguishibility under chosen ciphertext attack} secure ($\indcca)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q_e$ encryption queries to oracle $\oracle[LoR]$ and at most $q_d$ decryption queries to oracle $\oracle[ODec]$, the advantage $\advantage{\indcpa}{\textsf{SE}}[(\adv)] \leq \varepsilon$.
+
+$$
+\advantage{\lorcca}{\textsf{SE}}[(\adv)] = 2 \cdot | \mathrm{G}^{\lorcca}(\adv) \Rightarrow \true ] - \frac{1}{2} | 
+$$ 
+
+
+\begin{figure}[h]
+\centering
+\begin{codeframe}[colback = white, width=9.75cm, height=6.5cm]{$\mathrm{G}^{\lorcca}$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering,  width=3.5cm]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+K \sample \mathcal{K} \\
+\mathcal{Q}_d \gets \emptyset
+}
+
+\procedure[linenumbering, width=3.5cm]{$\textbf{Oracle }\dec(N,C)$}{ 
+\pcif (N,C) \in \mathcal{Q} \pcthen \\
+    \t \pcreturn \bot \\
+M \gets \mathcal{D}^N_K(C) \\
+\mathcal{Q}_d \gets \mathcal{Q}_d \cup \{(N,C)\} \\ 
+ \pcreturn M
+}
+\end{pcvstack}
+
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering, width=4cm]{$\textbf{Oracle }\enc(N,M_0, M_1)$}{ 
+\pcif |M_0| \neq |M_1| \pcthen \\ 
+	\t \pcreturn \bot \\
+C \sample \mathcal{E}^N_K(M_b) \\
+ \pcreturn C
+}
+\procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Finalize}$}{
+ b' \sample \adv^{\enc, \dec}(\cdot) \\
+\pcreturn b'= b
+}
+\end{pcvstack}
+
+\end{pchstack}
+\end{codeframe}
+\caption{LoR-CPA Game for a \textsf{SE} scheme $\Pi$. }
+\label{fig:lorcca-game}
+\end{figure}
+
+
+
+\subsubsection{RoR-CCA Security}
+A symmetric encryption scheme  $\textsf{SE}$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with real-or-random oracle} ($\rorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\rorcpa}{\textsf{SE}}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\rorcpa}{\textsf{SE}}[(\adv)] = \abs{\Pr[\mathrm{G}^{\rorcpa\textrm-0}(\adv)]  - \Pr[\mathrm{G}^{\rorcpa\textrm-1}(\adv)]
+} 
+$$
+
+\begin{figure}[h]
+    \centering
+    \begin{codeframe}[colback = white, width=5.25cm, height=9.5cm]{$\mathrm{G}^{\rorcca\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+                K \sample \mathcal{K} \\ 
+                \mathcal{Q}_e, \mathcal{Q}_d \gets \emptyset  
+            }
+    
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(N,M)$}{
+                \pcif (N,M) \in \mathcal{Q}_e \pcthen \\
+                    \t \pcreturn \bot \\
+                C \gets \mathcal{E}^N_K(M) \\ 
+                \mathcal{Q}_e \gets \mathcal{Q}_e \cup \{(N,M)\} \\ 
+                \mathcal{Q}_d \gets \mathcal{Q}_d \cup \{(N,C)\} \\ 
+                \pcreturn C
+            }
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Dec}(N,C)$}{
+                \pcif (N,C) \in \mathcal{Q}_d \pcthen \\
+                    \t \pcreturn \bot \\ 
+                M \gets \mathcal{D}^N_K(C) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=5.25cm, height=9.5cm]{$\mathrm{G}^{\rorcca\textrm-1}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+                \mathcal{Q}_e, \mathcal{Q}_d \gets \emptyset  
+            }
+            
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(N,M)$}{
+                \pcif (N,M) \in \mathcal{Q}_e \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \sample \bin^{|M|} \\
+                \pcreturn C
+            }
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Dec}(N,C)$}{
+                C \gets \mathcal{D}^N_K(N,C) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\rorcpa$ game for a SE scheme $\Pi$}
+\label{fig:rorcca-game}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Message Integrity}
+\subsubsection{$\intctxt$ Security}
+A symmetric encryption scheme $\mathsf{SE}$ is said to have $(q_e, q_d, t, \varepsilon)$-\textit{ciphertext integrity} (INT-CTXT) secure, if for any adversary $\adv$ running in time $t$ and making at most $q_e$ encryption oracle queries and exact one try query to oracle $\oracle[OTry]$,  the advantage $\advantage{INT-CTXT}{\mathsf{SE}}[(\adv)] \leq \varepsilon$ where 
+$$
+\advantage{INT-CTXT}{\mathsf{SE}}[(\adv)] = \Pr[\mathrm{G}^{\intctxt}(\adv) \Rightarrow 1]
+$$
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=10.5cm, height=6cm]{$\mathrm{G}^{\intctxt}$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering,width=3.5cm]{$\textbf{procedure } \textsc{Init}$}{ 
+K \sample \mathcal{K} \\ 
+\mathcal{Q} \gets \emptyset \\
+\textsf{win} \gets \false 
+}
+
+\procedure[linenumbering,width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{ 
+C \gets \mathcal{E}_K(M) \\ 
+\mathcal{Q} \gets \mathcal{Q} \cup \{C\} \\ 
+\pcreturn C
+}
+\end{pcvstack}
+
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering, width=5.5cm]{$\textbf{procedure } \dec(C)$}{
+M \gets \mathcal{D}_K(C) \\ 
+\pcif C \not\in \mathcal{Q} \wedge M \neq \bot \pcthen \\ 
+    \t \textsf{win} \gets \true \\ 
+\pcreturn (M \neq \bot)  
+}
+
+\procedure[linenumbering, width=5.5cm]{$\textbf{procedure } \textsc{Finalize}$}{
+\pcreturn \textsf{win}
+}
+\end{pcvstack}
+\end{pchstack}
+\end{codeframe}
+\caption{$\textsc{INT-CTXT}$ game for a LPSE scheme $\Pi$}
+\label{fig:int-ctxt-game}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{INT-PTXT Security}
+A symmetric encryption scheme $\Pi$ is said to be $(q_e, t, \varepsilon)$-\textit{plaintext integrity} (INT-PTXT) secure if for all adversary $\adv$ running in time $t$ and making at most $q_e$ encryption oracle queries with $\advantage{INT-PTXT}{\Pi}[(\adv)] \leq \varepsilon$ where 
+$$
+\advantage{\intptxt}{\Pi}[(\adv)] = \Pr[\mathrm{G}^{\intptxt}(\adv) \Rightarrow 1]
+$$
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=10.5cm, height=6cm]{$\mathrm{G}^{\intptxt}$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering,width=3.5cm]{$\textbf{procedure } \textsc{Init}$}{ 
+K \sample \mathcal{K} \\ 
+\mathcal{Q} \gets \emptyset \\
+\textsf{win} \gets \false 
+}
+
+\procedure[linenumbering,width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{ 
+C \gets \mathcal{E}_K(M) \\ 
+\mathcal{Q} \gets \mathcal{Q} \cup \{M\} \\ 
+\pcreturn C
+}
+\end{pcvstack}
+
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering, width=5.5cm]{$\textbf{procedure } \dec(C)$}{
+M \gets \mathcal{D}_K(C) \\ 
+\pcif C \not\in \mathcal{Q} \wedge M \neq \bot \pcthen \\ 
+    \t \textsf{win} \gets \true \\ 
+\pcreturn (M \neq \bot)  
+}
+
+\procedure[linenumbering, width=5.5cm]{$\textbf{procedure } \textsc{Finalize}$}{
+\pcreturn \textsf{win}
+}
+\end{pcvstack}
+\end{pchstack}
+\end{codeframe}
+\caption{$\textsc{INT-PTXT}$ game for a LPSE scheme $\Pi$}
+\label{fig:int-ptxt-game}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{theorem}
+If a symmetric encryption scheme $\Pi$ is $\intctxt$ secure, then it is also $\intptxt$ secure. 
+\end{theorem}
+
+\begin{proof}
+We prove by contraposition that if $\SE$ is not INT-CTXT, then it is not INT-PTXT. Let $\adv$ be a INT-CTXT adversary against $\SE$, we construct an adversary $\bdv$ against INT-PTXT of $\SE$ such that $\bdv$ runs $\adv$ and replys $\adv$'s queries to $\bdv$'s $\oracle[OEnc]$ and $\oracle[OTry]$. 
+
+We have that $\bdv$ simulates the INT-CTXT game of $\adv$ since $\bdv$ makes the exact the same number of queries as $\adv$ and $\bdv$ returns the same $c^*$ as $\adv$. 
+
+We have that $\bdv$ wins if $\adv$ wins. Let $c^*$ be the ciphertext query $\adv$ makes to $\oracle[OTry]$. Since $\adv$ wins, we have that $c^* \not\in \mathcal{Q}_c$, which implies $m^* \not\in \mathcal{Q}_m$ where $m^* = \dec(K, c^*)$. Thus $\bdv$ wins if $\adv$ wins. 
+
+\end{proof}

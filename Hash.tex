@@ -1,0 +1,176 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hash Function
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Hash Function}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Collision Resistance} Let $H: \mathcal{D} \rightarrow \mathcal{R}$ be a hash function. An algorithm $\adv$ is said to be $(t,\varepsilon)$ \textit{collision resistance} (CR) adversary against $H$ if $\adv$ runs in time $t$ with advantage
+
+$$
+\advantage{CR}{H}[(\adv)] = \Pr[\mathrm{G}^\text{CR} \Rightarrow 1] = \varepsilon
+$$ 
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=7.25cm, height=4cm]{$\mathrm{G}^{\text{CR}}$}
+\begin{pchstack}
+\procedure[linenumbering]{$\textbf{procedure} $}{ 
+(m, m') \sample \adv(\cdot) \\
+\pcif m \neq m' \wedge H(m) = H(m') \pcthen \\
+	\t \pcreturn 1 \\
+\pcelse \\
+	\t \pcreturn 0
+}
+\end{pchstack}
+\end{codeframe}
+\caption{Collision Resistance (CR) Game}
+\label{fig:cr-game}
+\end{figure}
+
+\bigskip
+\textit{Remarks:}
+\begin{enumerate}
+	\item Collision must exist because $|\mathcal{D}| \gg |\mathcal{R}|$.
+	\item Fix a hash function $H$, there must be an efficient algorithm $\adv$ that outputs collisions. 
+	\item Thus we cannot have a security definition for collision resistance that quantifies over all efficient algorithms $\adv$. 
+\end{enumerate}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Second Pre-image Resistance}
+Let $H: \mathcal{D} \rightarrow \mathcal{R}$ be a hash function. An algorithm $\adv$ is said to be $(t,\varepsilon)$ \textit{second preimage} (2PRE) adversary against $H$ if $\adv$ runs in time $t$ with advantage  
+
+$$
+\advantage{2PRE}{H}[(\adv)] = \Pr[\mathrm{G}^\text{2PRE} \Rightarrow 1] = \varepsilon
+$$ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Pre-image Resistance}
+Let $H: \mathcal{D} \rightarrow \mathcal{R}$ be a hash function. An algorithm $\adv$ is said to be $(t,\varepsilon)$ \textit{preimage resistance} (PRE) adversary against $H$ if $\adv$ runs in time $t$ with advantage  
+
+$$
+\advantage{PRE}{H}[(\adv)] = \Pr[\mathrm{G}^\text{PRE}(\adv) \Rightarrow 1] = \varepsilon
+$$ 
+
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c c}
+\begin{codeframe}[colback = white, width=6.5cm, height=5.25cm]{$\mathrm{G}^{\text{2PRE}}$}
+\begin{pchstack}[space=0.5cm]
+\procedure[linenumbering]{$\textbf{procedure }$}{ 
+m \sample \mathcal{D} \\ 
+h \gets H(m) \\
+m' \sample \adv(m, h) \\
+\pcif m \neq m' \wedge H(m') = h \pcthen \\
+	\t \pcreturn 1 \\
+\pcelse \\
+	\t \pcreturn 0
+}
+\end{pchstack}
+\end{codeframe}
+
+&\hspace{0.3cm} 
+
+\begin{codeframe}[colback = white, width=5.5cm, height=5.25cm]{$\mathrm{G}^{\text{PRE}}$}
+\begin{pchstack}[space=0.5cm]
+\procedure[linenumbering]{$\textbf{procedure }$}{ 
+h \sample \mathcal{R} \\
+m \sample \adv(h) \\
+\pcif H(m) = h \pcthen \\
+\t \pcreturn 1 \\
+\pcelse \\
+\t \pcreturn 0 
+}
+\end{pchstack}
+\end{codeframe}
+\end{tabular}
+\caption{\textbf{Left}: Second Preimage Resistance (2PRE) Game. \textbf{Right}: Preimage Resistance (PRE) Game}
+\label{fig:pre-game}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{One-wayness}
+Let $H: \mathcal{D} \rightarrow \mathcal{R}$ be a hash function. An algorithm $\adv$ is said to be $(t,\varepsilon)$ \textit{one-wayness} (OWF) adversary against $H$ if $\adv$ runs in time $t$ with advantage 
+
+$$
+\advantage{OWF}{H}[(\adv)] = \Pr[\mathrm{G}^\text{OWF}(\adv) \Rightarrow 1] = \varepsilon
+$$ 
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=5.5cm, height=5cm]{$\mathrm{G}^{\text{OWF}}$}
+\begin{pchstack}[space=0.5cm]
+\procedure[linenumbering]{$\textbf{procedure }$}{ 
+m \sample \mathcal{D} \\ 
+h \gets H(m) \\
+m' \sample \adv(h) \\
+\pcif H(m') = h \pcthen \\
+	\t \pcreturn 1 \\
+\pcelse \\
+	\t \pcreturn 0
+}
+\end{pchstack}
+\end{codeframe}
+\caption{One-wayness (OWF) Game}
+\label{fig:owf-game}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Universal Hashing} A keyed hash funcion $H$ is an $\varepsilon$-bounded \textit{universal hash function} ($\varepsilon$-UHF) if for any adversary $\adv$, the advantage $\advantage{UHF}{H}[(\adv)] \leq \varepsilon$ where 
+$$
+\advantage{UHF}{H}[(\adv)] = \Pr[\mathrm{G}^\text{UHF}(\adv) \Rightarrow 1]
+$$
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=5.75cm, height=5cm]{$\mathrm{G}^{\text{UHF}}$}
+\begin{pchstack}
+\procedure[linenumbering]{$\textbf{procedure}$}{ 
+K \sample \mathcal{K} \\ 
+(m_0, m_1) \sample \adv(\cdot) \\ 
+\pcif H(K, m_0) = H(K, m_1) \\ 
+	\t\pctab\pctab  \wedge m_0 \neq m_1 \pcthen \\ 
+	\t \pcreturn 1 \\
+\pcelse \\
+	\t \pcreturn 0
+}
+\end{pchstack}
+\end{codeframe}
+\caption{UHF Game}
+\label{fig:uhf-game}
+\end{figure}
+
+
+\subsubsection{Difference Unpredictable Hashing} A keyed hash function $H$ with digest space $\mathcal{T}$ equipped with a group operation "+", is an $\varepsilon$-bounded \textit{difference unpredictable hashing function} if for any adversary $\adv$, the advantage $\advantage{DUHF}{H}[(\adv)] \leq \varepsilon$ where 
+$$
+\advantage{DUHF}{H}[(\adv)] = \Pr[\mathrm{G}^\text{DUHF}(\adv) \Rightarrow 1]
+$$
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=6.25cm, height=5cm]
+{$\mathrm{G}^{\text{DUHF}}$}
+\begin{pchstack}
+\procedure[linenumbering]{$\textbf{procedure }$}{ 
+K \sample \mathcal{K} \\ 
+(m_0, m_1, \delta) \sample \adv(\cdot) \\ 
+\pcif H(K, m_0) - H(K, m_1) = \delta \\ 
+	\t\pctab\pctab \wedge m_0 \neq m_1 \pcthen \\ 
+	\t \pcreturn 1 \\
+\pcelse \\
+	\t \pcreturn 0
+}
+\end{pchstack}
+\end{codeframe}
+\caption{DUHF Game}
+\label{fig:duhf-game}
+\end{figure}

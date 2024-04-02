@@ -1,0 +1,57 @@
+\newpage
+\section{Message Authentication Code}
+
+\subsection{EUF-CMA Security}
+A MAC scheme is $(q_t, q_v, t, \varepsilon)$-\textit{existential unforgeability under chosen message attack} ($\eufcma$) secure, if for any adversaries making $q_t$ queries to tagging oracle $\oracle[OTag]$, $q_v$ queries to verification $\oracle[OVfy]$, and running in time at most $t$, the advantage $\advantage{\eufcma}{\mac}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\eufcma}{\mac}[(\adv)] = \Pr[\mathrm{G}^\eufcma(\adv) \Rightarrow 1] 
+$$
+
+\subsection{SUF-CMA Security}
+A MAC scheme is $(q_t, q_v, t, \varepsilon)$-\textit{strong existential unforgeability under chosen message attack} ($\seufcma$) secure, if for any adversaries making $q_t$ queries to tagging oracle $\oracle[OTag]$, $q_v$ queries to verification oracle $\oracle[OVfy]$, and running in time at most $t$, the advantage $\advantage{\seufcma}{\mac}[(\adv)] \leq \varepsilon$ where
+
+$$
+\advantage{\seufcma}{\mac}[(\adv)] = \Pr[\mathrm{G}^\seufcma(\adv) \Rightarrow 1] 
+$$
+
+\begin{figure}[!ht]
+\centering
+\begin{codeframe}[colback = white, width=10cm, height=6.5cm]
+{$\mathrm{G}^{\eufcma}$ \hspace{0.15cm} \dbox{$\mathrm{G}^{\eufcma}$}}
+\begin{pchstack}[space=0.5cm]
+    \begin{pcvstack}[space=0.3cm]
+    \procedure[linenumbering,width=4.5cm]{$\textbf{procedure } \textsc{Init}$}{ 
+		K \sample \mathcal{K} \\
+		\mathcal{Q} \gets \emptyset 
+	}
+
+     \procedure[linenumbering,width=4.5cm]{$\textbf{procedure } \textsc{Finalize}$}{
+    (m^*, \tau^*) \sample \adv^{\textsc{Tag}, \textsc{Vfy}}(\cdot) \\ 
+	 	\pcif (m^*,\dbox{$\tau^*$}) \in \mathcal{Q} \pcthen \\
+		\t \pcreturn 0 \\
+		\pcelse \\
+		\t b \gets \mathcal{V}_K(m, \tau) \\
+		\t \pcreturn b 
+    }
+    \end{pcvstack}
+ 
+
+	\begin{pcvstack}[space=0.3cm]
+	\procedure[linenumbering, width=3.75cm]{$\textbf{Oracle }\oracle[Tag](m)$}{ 
+		\tau \gets \mathcal{T}_K(m) \\
+		\mathcal{Q} \gets \mathcal{Q} \cup \{(m, \dbox{$\tau$})\} \\
+		\pcreturn \tau 
+	}
+
+	\procedure[linenumbering, width=3.75cm]{$\textbf{Oracle }\oracle[Vfy](m, \tau)$}{ 
+		b \gets \mathcal{V}_K(m, \tau) \\
+		%\mathcal{Q} \gets \mathcal{Q} \cup \{m\} \\
+		\pcreturn b
+	}
+	\end{pcvstack}
+\end{pchstack}
+\end{codeframe}
+\caption{EUF-CMA and SUF-CMA Game for a $\mac$ scheme. The dox-boxed code is exclusive for $\mathrm{G}^\seufcma$. }
+\label{fig:sufcma-game-mac}
+\end{figure}

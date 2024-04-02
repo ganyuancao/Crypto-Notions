@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{plain}
+\usepackage[english]{babel}
+\usepackage{a4wide}
+
+\usepackage{hyperref}
+
+%\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% Import Cryptocode package 
+\usepackage [
+n, adversary,landau,probability,notions,logic, ff, mm,
+primitives,events,complexity,oracles,asymptotics,keys,sets,operators,advantage]{cryptocode}
+\renewcommand{\pcadvantagename}{\mathbf{Adv}}
+\renewcommand{\pcadvantagesuperstyle}[1]{\mathrm{#1}}
+\renewcommand{\pcalgostyle}[1]{\ensuremath{\textsc{#1}}}
+\renewcommand{\pcoraclestyle }[1]{\textsc{#1}}
+\newcommand{\lorcpa}{\mathrm{LoR\textrm-CPA}}
+\newcommand{\rorcpa}{\mathrm{RoR\textrm-CPA}}
+\newcommand{\lorcca}{\mathrm{LoR\textrm-CCA}}
+\newcommand{\rorcca}{\mathrm{RoR\textrm-CCA}}
+\newcommand{\intctxt}{\mathrm{INT\textrm-CTXT}}
+\newcommand{\intptxt}{\mathrm{INT\textrm-PTXT}}
+
+% tcolorbox
+\usepackage[most]{tcolorbox}
+\newtcolorbox{codeframe}[2][]{%
+  attach boxed title to top left
+               = {xshift=0.5cm, yshift=-8pt},
+  colback      = gray!125!white,
+  colframe     = gray!125!white,
+  fonttitle    = \bfseries,
+  coltitle=white,
+  colbacktitle = gray!125!black,
+  title        = #2,#1,
+  enhanced,
+  nobeforeafter
+}
+
+
+% Change cryptocode indentation style 
+\usepackage{dashrule}
+\renewcommand{\pcind}{{\color{gray}\rlap{\smash{\hspace{3pt}\rule[-.35em]{1pt}{1.525em}}}} \hspace{0.3cm}}
+
+
+% Use fancybox 
+\usepackage{dashbox}
+\usepackage{fancybox}
+\cornersize{.45} 
+
+\usepackage{stmaryrd}
+
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Begain Here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\begin{center}
+\sc
+\huge{Applied Cryptography} 
+
+\vspace{0.5cm}
+\Large{Lecture Note}
+
+\vspace{0.5cm}
+\large{Spring 2023}
+
+\vspace{0.5cm}
+\large{Cao, Ganyuan}
+\vspace{1cm}
+\end{center}
+
+\tableofcontents
+
+
+\input{Intro-to-Game-Based-Proof}
+\input{Symmetric-Encryption}
+\input{Hash}
+\input{MAC}
+
+
+\end{document}

@@ -1,0 +1,62 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Security Proof}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Game-based Security Proof Framework}
+To prove the statment: \textit{"If a scheme $\textsf{F}_1$ is $\mathcal{S}_1$ secure, then a scheme $\textsf{F}_2$ is $\mathcal{S}_2$ secure"}, we follow the steps:
+\begin{enumerate}
+	\item Suppose by contraposition that there is an adversary $\adv$ against $\mathcal{S}_2$ security of $\textsf{F}_2$ s.t. $\advantage{\mathcal{S}_2}{\textsf{F}_2}[(\adv)]$ is not negligible. 
+	\item Construct the adversary $\bdv$ against $\mathcal{S}_1$ security of $\textsf{F}_1$ with $\adv$ as subroutine. 
+	\item Deduce that $\advantage{\mathcal{S}_1}{\textsf{F}_1}[(\bdv)]$ is not negligible. 
+\end{enumerate}
+
+\textit{Remarks:}
+\begin{enumerate}
+	\item Assume that $\bdv$ is given an oracle $\oracle_{\bdv}$, we use $\oracle_{\bdv}$ to simulate the pre-defined oracle for $\oracle_\adv$. In the adversary $\bdv$, the adversary $\adv$ instead calls the simulation oracle $\oracle[OSim]_\adv$. 
+	\item The adversary $\bdv$ together with the oracle $\oracle[OSim]_\adv$ simulates the $\mathcal{S}_2$ security game of $\textsf{F}_2$. 
+	\item The framework also works for problem reduction. If we want to prove a problem $\mathcal{P}_1$ reduces to a problem $\mathcal{P}_2$, it is equivalent to prove \textit{"if there is an adversary that break the problem $\mathcal{P}_2$ with non-negligible advantage, then there is an adversary $\bdv$ that break $\mathcal{P}_1$ with non-negligible advantage."}
+	\item In the case that the primitive $\mathcal{S}_1$ is too "far" from $\mathcal{S}_2$, and \textit{distinguishibility} game in involved, it is better to use "game-chaining" method by decomposing the distinguishibility game into sub-games and chain the sub-games to prove the advantage. Note that the framework proposed by Ballare can be used to write the games for better readability.  
+\end{enumerate}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Advantage Rewriting Lemma}
+Let $b$ be a uniformly random bit, $b'$ be the output of some algorithm. Then 
+$$
+\begin{aligned}
+2 \abs{\Pr[b' = b] - \frac{1}{2}} 
+&= \abs{\Pr[b' = 1 | b = 1] - \Pr[b' = 1 | b = 0] } \\
+&= \abs{\Pr[b' = 0 | b = 0] - \Pr[b' = 0 | b = 1] }
+\end{aligned}
+$$
+
+\begin{proof}
+$$
+\begin{aligned}
+\Pr[b'=b] - \frac{1}{2} &= \Pr[b' = b \mid b = 1] \cdot \Pr[b=1] + \Pr[b'=b \mid b = 0] \cdot \Pr[b = 0] - \frac{1}{2} \\	
+&=  \Pr[b' = b \mid b = 1] \cdot \frac{1}{2} + \Pr[b' = b \mid b = 0] \cdot \frac{1}{2} - \frac{1}{2} \\  
+&= \frac{1}{2}(\Pr[b'=1 \mid b = 1] + \Pr[b' = 0 \mid b=0] - 1) \\
+&= \frac{1}{2}(\Pr[b'=1 \mid b = 1] - (1 - \Pr[b' = 0 \mid b = 0])) \\
+&= \frac{1}{2}(\Pr[b'=1 \mid b=1] - \Pr[b'=1 \mid b = 0])
+\end{aligned}
+$$
+
+\end{proof}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Difference Lemma}
+Let $Z, W_1, W_2$ be (any) events defined over some probability space. Suppose that $\Pr[W_1 \wedge \neg Z] = \Pr[W_2 \wedge \neg Z]$. Then we have $\abs{\Pr[W_2] - \Pr[W_1] \leq \Pr[Z]}$. (In typical uses, we have that $(W_1 \wedge \neg Z)$ occurs if and only if $(W_2 \wedge Z)$ occurs)
+
+\begin{proof}
+$$
+\begin{aligned}
+\abs{\Pr[W_2] - \Pr[W_1]} &= \abs{\Pr[(W_1 \wedge Z) \vee (W_1 \wedge \neg Z)]  -\Pr[(W_2 \wedge Z) \vee (W_2 \wedge \neg Z)] } \\ 
+&= \abs{\Pr[W_1 \wedge Z] + \Pr[W_1 \wedge \neg Z]  - \Pr[W_2 \wedge Z] - \Pr[W_2 \wedge \neg Z] } \\ 
+&= \abs{\Pr[W_1 \wedge Z] - \Pr[W_2 \wedge Z]} \\
+&\leq \Pr[Z]
+\end{aligned}
+$$
+\end{proof}
