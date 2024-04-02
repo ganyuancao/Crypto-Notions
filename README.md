@@ -1,5 +1,7 @@
 # Crypto-Notions
-A summary talking about notions in provable security. Most parts of the note are taken from slides for Applied Cryptography at ETHZ by Prof.Kenny Paterson.
+This is a summary talking about commonly used notions in provable security.
 
 **Disclamier:**
-This note has not been peer reviewed and may contain errors. Any correction is welcomed. 
+This summary has NOT been finished. 
+Correction will be made and the part of public-key crypto will be added later. 
+
