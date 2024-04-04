@@ -1,0 +1,195 @@
+\newpage
+\section{Public-Key Encryption}
+
+\subsection{LoR-CPA Security}
+A public-key encryption scheme  $\Pi$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with left-or-right oracle} ($\lorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\lorcpa}{\Pi}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\lorcpa}{\Pi}[(\adv)] = 2 \cdot | \Pr[\mathrm{G}^{\lorcpa}(\adv) \Rightarrow \true ] - \frac{1}{2} | 
+$$ 
+
+
+\begin{figure}[h]
+\centering
+\begin{codeframe}[colback = white, width=9.5cm, height=4.75cm]{$\mathrm{G}^{\lorcpa}$}
+
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+(PK,SK) \sample \mathcal{K} 
+}
+
+\procedure[linenumbering]{$\textbf{procedure } \textsc{Finalize}$}{
+ b' \sample \adv^{\enc}(PK) \\
+\pcreturn b'= b
+}
+\end{pcvstack}
+\procedure[linenumbering]{$\textbf{Oracle }\enc(M_0, M_1)$}{ 
+\pcif |M_0| \neq |M_1| \pcthen \\ 
+	\t \pcreturn \bot \\
+C \sample \mathcal{E}_{PK}(M_b) \\
+ \pcreturn C
+}
+\end{pchstack}
+\end{codeframe}
+\caption{LoR-CPA Game for a public-key encryption scheme $\Pi$. }
+\label{fig:lorcpa-game-pkc}
+\end{figure}
+
+
+
+\subsection{RoR-CPA Security}
+A public-key encryption scheme  $\Pi$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with real-or-random oracle} ($\rorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\rorcpa}{\Pi}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\rorcpa}{\Pi}[(\adv)] = \abs{\Pr[\mathrm{G}^{\rorcpa\textrm-0}(\adv)]  - \Pr[\mathrm{G}^{\rorcpa\textrm-1}(\adv)]
+} 
+$$
+
+\begin{figure}[!h]
+    \centering
+    \begin{codeframe}[colback = white, width=5.25cm, height=6cm]{$\mathrm{G}^{\rorcpa\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Init} $}{
+                (PK,SK) \sample \mathcal{K} \\ 
+                \mathcal{Q} \gets \emptyset  
+            }
+    
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                \pcif M \in \mathcal{Q} \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \gets \mathcal{E}_{PK}(M) \\ 
+                \mathcal{Q} \gets \mathcal{Q} \cup \{M\} \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=5.25cm, height=6cm]{$\mathrm{G}^{\rorcpa\textrm-1}$}
+        \begin{pcvstack}[space=0.5cm]
+             \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Init} $}{
+                \mathcal{Q} \gets \emptyset  
+            }
+            
+            \procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                 \pcif M \in \mathcal{Q} \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \sample \bin^{|M|} \\
+                \mathcal{Q} \gets \mathcal{Q} \cup \{M\} \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\rorcpa$ game for a SE scheme $\Pi$}
+\label{fig:rorcpa-game-pkc}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{LoR-CCA Security}
+A public-key encryption scheme  $\Pi$ is defined to be $(q_e, q_d, t,\varepsilon)$-\textit{indistinguishibility under chosen ciphertext attack} secure ($\indcca)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q_e$ encryption queries to oracle $\enc$ and at most $q_d$ decryption queries to oracle $\dec$, the advantage $\advantage{\indcpa}{\textsf{SE}}[(\adv)] \leq \varepsilon$.
+
+$$
+\advantage{\lorcca}{\textsf{SE}}[(\adv)] = 2 \cdot | \mathrm{G}^{\lorcca}(\adv) \Rightarrow \true ] - \frac{1}{2} | 
+$$ 
+
+
+\begin{figure}[!h]
+\centering
+\begin{codeframe}[colback = white, width=9.75cm, height=6.5cm]{$\mathrm{G}^{\lorcca}$}
+\begin{pchstack}[space=0.5cm]
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering,  width=3.5cm]{$\textbf{procedure } \textsc{Init}$}{ 
+b \sample \bin \\
+(PK,SK) \sample \mathcal{K} \\
+\mathcal{Q}_d \gets \emptyset
+}
+
+\procedure[linenumbering, width=3.5cm]{$\textbf{Oracle }\dec(N,C)$}{ 
+\pcif (N,C) \in \mathcal{Q} \pcthen \\
+    \t \pcreturn \bot \\
+M \gets \mathcal{D}_{SK}(C) \\
+\mathcal{Q}_d \gets \mathcal{Q}_d \cup \{(N,C)\} \\ 
+ \pcreturn M
+}
+\end{pcvstack}
+
+\begin{pcvstack}[space=0.3cm]
+\procedure[linenumbering, width=4cm]{$\textbf{Oracle }\enc(N,M_0, M_1)$}{ 
+\pcif |M_0| \neq |M_1| \pcthen \\ 
+	\t \pcreturn \bot \\
+C \sample \mathcal{E}_{PK}(M_b) \\
+ \pcreturn C
+}
+\procedure[linenumbering, width=4cm]{$\textbf{procedure } \textsc{Finalize}$}{
+ b' \sample \adv^{\enc, \dec}(\cdot) \\
+\pcreturn b'= b
+}
+\end{pcvstack}
+
+\end{pchstack}
+\end{codeframe}
+\caption{LoR-CPA Game for a \textsf{SE} scheme $\Pi$. }
+\label{fig:lorcca-game-pkc}
+\end{figure}
+
+
+
+\subsection{RoR-CCA Security}
+A public-key encryption scheme  $\Pi$ is said to have $(q,t,\varepsilon)$-\textit{indistinguishibility under chosen plaintext attack with real-or-random oracle} ($\rorcpa)$, if for any adversaries $\adv$ running in time at most $t$ and making at most $q$ encryption queries, the advantage $\advantage{\rorcpa}{\Pi}[(\adv)] \leq \varepsilon$ where 
+
+$$
+\advantage{\rorcpa}{\Pi}[(\adv)] = \abs{\Pr[\mathrm{G}^{\rorcpa\textrm-0}(\adv)]  - \Pr[\mathrm{G}^{\rorcpa\textrm-1}(\adv)]
+} 
+$$
+
+\begin{figure}[!htp]
+    \centering
+    \begin{codeframe}[colback = white, width=5.25cm, height=9.5cm]{$\mathrm{G}^{\rorcca\textrm-0}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+                K \sample \mathcal{K} \\ 
+                \mathcal{Q}_e, \mathcal{Q}_d \gets \emptyset  
+            }
+    
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(M)$}{
+                \pcif M \in \mathcal{Q}_e \pcthen \\
+                    \t \pcreturn \bot \\
+                C \gets \mathcal{E}_{PK}(M) \\ 
+                \mathcal{Q}_e \gets \mathcal{Q}_e \cup \{M\} \\ 
+                \mathcal{Q}_d \gets \mathcal{Q}_d \cup \{C\} \\ 
+                \pcreturn C
+            }
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Dec}(N,C)$}{
+                \pcif C \in \mathcal{Q}_d \pcthen \\
+                    \t \pcreturn \bot \\ 
+                M \gets \mathcal{D}_{SK}(C) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+    \hspace{0.5cm}
+    \begin{codeframe}[colback = white, width=5.25cm, height=9.5cm]{$\mathrm{G}^{\rorcca\textrm-1}$}
+        \begin{pcvstack}[space=0.3cm]
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Init} $}{
+                \mathcal{Q}_e, \mathcal{Q}_d \gets \emptyset  
+            }
+            
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Enc}(N,M)$}{
+                \pcif M \in \mathcal{Q}_e \pcthen \\
+                    \t \pcreturn \bot \\ 
+                C \sample \bin^{|M|} \\
+                \pcreturn C
+            }
+            \procedure[linenumbering, width=3.5cm]{$\textbf{procedure } \textsc{Dec}(C)$}{
+                C \gets \mathcal{D}_{SK}(C) \\ 
+                \pcreturn C
+            }
+        \end{pcvstack}
+    \end{codeframe}
+\caption{$\rorcpa$ game for a public-key encryption scheme $\Pi$}
+\label{fig:rorcca-game-pkc}
+\end{figure}
